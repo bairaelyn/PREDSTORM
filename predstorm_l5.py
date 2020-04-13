@@ -209,6 +209,7 @@ def main():
     if run_mode == 'normal':
         try:
             stam = ps.get_stereo_beacon_data(starttime=startread, endtime=timestamp-timedelta(minutes=1))
+            stam.interp_nans()
             stam.load_positions()
             sta_details = stam.return_position_details(timestamp)
             if stam.h['PlasmaDataIntegrity'] == 0: # very low quality data
@@ -221,6 +222,7 @@ def main():
         est_timelag = lag_L1 + lag_r
         stam = ps.get_stereo_beacon_data(starttime=timestamp-timedelta(days=plot_future_days+est_timelag),
                                          endtime=timestamp+timedelta(days=2))
+        stam.interp_nans()
         stam.load_positions()
         sta_details = stam.return_position_details(timestamp)
 
@@ -245,7 +247,7 @@ def main():
         if (datetime.utcnow() - historic_date).days < (7.-plot_past_days):
             dst = ps.get_noaa_dst()
         else:
-            dst = ps.get_past_dst(filepath="data/dstarchive/WWW_dstae00016185.dat",
+            dst = ps.get_past_dst(filepath="dstarchive/WWW_dstae00016185.dat",
                                   starttime=num2date(timenow)-timedelta(days=plot_past_days+1),
                                   endtime=num2date(timenow))
             if len(dst) == 0.:
